@@ -13,6 +13,8 @@
 		7F08B70723BF36EA0031DEA0 /* ams_data_mgmt.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7F08B70523BF36EA0031DEA0 /* ams_data_mgmt.xcdatamodeld */; };
 		7F08B70923BF36ED0031DEA0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F08B70823BF36ED0031DEA0 /* Assets.xcassets */; };
 		7F08B70C23BF36ED0031DEA0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F08B70A23BF36ED0031DEA0 /* LaunchScreen.storyboard */; };
+		7F08B71423BF3B4D0031DEA0 /* Sensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F08B71323BF3B4D0031DEA0 /* Sensor.swift */; };
+		7F08B71623BF3B830031DEA0 /* Reading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F08B71523BF3B830031DEA0 /* Reading.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		7F08B70823BF36ED0031DEA0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7F08B70B23BF36ED0031DEA0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7F08B70D23BF36ED0031DEA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7F08B71323BF3B4D0031DEA0 /* Sensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sensor.swift; sourceTree = "<group>"; };
+		7F08B71523BF3B830031DEA0 /* Reading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reading.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +67,8 @@
 				7F08B70A23BF36ED0031DEA0 /* LaunchScreen.storyboard */,
 				7F08B70D23BF36ED0031DEA0 /* Info.plist */,
 				7F08B70523BF36EA0031DEA0 /* ams_data_mgmt.xcdatamodeld */,
+				7F08B71323BF3B4D0031DEA0 /* Sensor.swift */,
+				7F08B71523BF3B830031DEA0 /* Reading.swift */,
 			);
 			path = "ams-data-mgmt";
 			sourceTree = "<group>";
@@ -139,7 +145,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F08B70123BF36EA0031DEA0 /* ViewController.swift in Sources */,
+				7F08B71423BF3B4D0031DEA0 /* Sensor.swift in Sources */,
 				7F08B6FF23BF36EA0031DEA0 /* AppDelegate.swift in Sources */,
+				7F08B71623BF3B830031DEA0 /* Reading.swift in Sources */,
 				7F08B70723BF36EA0031DEA0 /* ams_data_mgmt.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,7 +294,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 4JFRQB466W;
 				INFOPLIST_FILE = "ams-data-mgmt/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -294,6 +303,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "agile.ams-data-mgmt";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -303,7 +313,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 4JFRQB466W;
 				INFOPLIST_FILE = "ams-data-mgmt/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -311,6 +322,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "agile.ams-data-mgmt";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
