@@ -15,6 +15,7 @@
 		7F08B70C23BF36ED0031DEA0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7F08B70A23BF36ED0031DEA0 /* LaunchScreen.storyboard */; };
 		7F08B71423BF3B4D0031DEA0 /* Sensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F08B71323BF3B4D0031DEA0 /* Sensor.swift */; };
 		7F08B71623BF3B830031DEA0 /* Reading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F08B71523BF3B830031DEA0 /* Reading.swift */; };
+		7F5AB2D623BFBD9800F31F18 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F5AB2D523BFBD9800F31F18 /* libsqlite3.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,8 @@
 		7F08B70D23BF36ED0031DEA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7F08B71323BF3B4D0031DEA0 /* Sensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sensor.swift; sourceTree = "<group>"; };
 		7F08B71523BF3B830031DEA0 /* Reading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reading.swift; sourceTree = "<group>"; };
+		7F5AB2D323BFBBD900F31F18 /* ams-data-mgmt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ams-data-mgmt-Bridging-Header.h"; sourceTree = "<group>"; };
+		7F5AB2D523BFBD9800F31F18 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = ../../../../../usr/lib/libsqlite3.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F5AB2D623BFBD9800F31F18 /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,8 +48,10 @@
 		7F08B6F223BF36EA0031DEA0 = {
 			isa = PBXGroup;
 			children = (
+				7F5AB2D323BFBBD900F31F18 /* ams-data-mgmt-Bridging-Header.h */,
 				7F08B6FD23BF36EA0031DEA0 /* ams-data-mgmt */,
 				7F08B6FC23BF36EA0031DEA0 /* Products */,
+				7F5AB2D423BFBD9800F31F18 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +77,14 @@
 				7F08B71523BF3B830031DEA0 /* Reading.swift */,
 			);
 			path = "ams-data-mgmt";
+			sourceTree = "<group>";
+		};
+		7F5AB2D423BFBD9800F31F18 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7F5AB2D523BFBD9800F31F18 /* libsqlite3.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,6 +318,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "agile.ams-data-mgmt";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ams-data-mgmt-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -323,6 +338,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "agile.ams-data-mgmt";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ams-data-mgmt-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
