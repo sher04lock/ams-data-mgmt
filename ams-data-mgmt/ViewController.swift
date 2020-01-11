@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 let YEAR_IN_SECONDS = 31556926.0
-let NO_OF_READINGS = 50 * 1000
+let NO_OF_READINGS = 200 * 1000
 
 var sqlResults = Results();
 
@@ -154,34 +154,54 @@ class ViewController: UIViewController {
     @IBAction func startArchivingTest(_ sender: Any) {
         setButtonsState(isEnabled: false)
         print("reading archiving data")
-        let startTime = Date();
+        var startTime: Date
+        var finishTime: Date
+        var elapsedTime: Double
+        
         var sensors: [Sensor] = []
         var readings: [Reading] = []
         
         var results = Results();
         
+        var times = ""
+        
+        
 //
         do {
             sensors = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(Data(contentsOf: Sensor.ArchiveURL!)) as! [Sensor];
-
         } catch {
             print("couldn't unarchive sensors data");
         }
 
         do {
             readings = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(Data(contentsOf: Reading.ArchiveURL!)) as! [Reading];
-
         } catch {
             print("couldn't unarchive readings data");
         }
+        
+        startTime = Date();
         
         // 1. largest/smallest timestamp
         results.largestTimestamp = readings.max(by: {(a, b) -> Bool in return a.timestamp < b.timestamp})!.timestamp
         results.smallestTimestamp = readings.min(by: {(a, b) -> Bool in return a.timestamp < b.timestamp})!.timestamp
         
+        finishTime = Date();
+        elapsedTime = finishTime.timeIntervalSince(startTime);
+        
+        times += "q1: \(elapsedTime * 1000) \n"
+        
+        startTime = Date()
         // 2. avg reading
         results.avgValue = Float(readings.reduce(0, {$0 + $1.value})) / Float(readings.count)
+        
+        finishTime = Date();
+        elapsedTime = finishTime.timeIntervalSince(startTime);
+        
+        times += "q2: \(elapsedTime * 1000) \n"
         // 3. avg readings per sensor
+        
+        
+        startTime = Date()
         
         var sensorResults: Dictionary<String, SensorResults> = [:];
         
@@ -194,11 +214,12 @@ class ViewController: UIViewController {
         
         results.sensorsResults = sensorResults;
         
-        let finishTime = Date();
         
-        let elapsedTime = finishTime.timeIntervalSince(startTime);
+        finishTime = Date();
+        elapsedTime = finishTime.timeIntervalSince(startTime);
         
-        resultsTextView.text = String(describing: results)
+        times += "q3: \(elapsedTime * 1000) \n"
+        resultsTextView.text = String(describing: times)
         
         print("Unarchiving data took: ", elapsedTime)
         print(sensors.count)
@@ -246,6 +267,7 @@ class ViewController: UIViewController {
         let docDir = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask, true).first!
         let dbFilePath = NSURL(fileURLWithPath: docDir).appendingPathComponent("demo.db")?.path
         
+        print("sqlite3 path: \(String(describing: dbFilePath))")
         if sqlite3_open(dbFilePath, &db) == SQLITE_OK {
          return db
         } else {
@@ -276,12 +298,10 @@ class ViewController: UIViewController {
             }
             
             sqlite3_finalize(insertSensorsStatement)
-//            sqlite3_exec(db, "COMMIT TRANSACTION", nil, nil, nil)
         }
         
         
         print ("inserted sensors data")
-//        sqlite3_exec(db, "BEGIN TRANSACTION", nil, nil, nil);
         if sqlite3_prepare_v2(db, insertReadingStatementString, -1, &insertReadingsStatement, nil) == SQLITE_OK {
             for reading in readings {
                 sqlite3_bind_int(insertReadingsStatement, 1, Int32(reading.timestamp.timeIntervalSince1970))
@@ -304,17 +324,23 @@ class ViewController: UIViewController {
     }
     
     @IBAction func startSqliteQueryTest(_ sender: Any) {
+        var startTime: Date
+        var finishTime: Date
+        var elapsedTime: Double = 0
+        var times = ""
         
         setButtonsState(isEnabled: false)
         print("generating sqlite3 data")
-        let startTime = Date();
      
         let db = openDb();
         
         sqlResults.sensorsResults = [:]
         
         
+        startTime = Date()
         if db != nil {
+            
+            
             let selectSQL = "SELECT max(timestamp) as max, min(timestamp) as min, avg(value) as avg from readings;"
             let selectSensorsSQL = "SELECT sensor, count(*) as readings, avg(value) as avg from readings group by sensor;"
             
@@ -330,6 +356,12 @@ class ViewController: UIViewController {
                 return 0
             }, nil, nil)
             
+            finishTime = Date();
+            elapsedTime = finishTime.timeIntervalSince(startTime);
+            
+            times += "q1: \(elapsedTime * 1000) \n"
+            
+            startTime = Date()
             
             sqlite3_exec(db, selectSensorsSQL, {_, columnCount, values, columns in
                 let sensor = String(cString: values![0]!)
@@ -339,13 +371,16 @@ class ViewController: UIViewController {
                 sqlResults.sensorsResults![sensor] = SensorResults(readings: Int(readings)!, avg: Float(avg)!)
                 return 0
             }, nil, nil)
+            
+            finishTime = Date();
+            elapsedTime = finishTime.timeIntervalSince(startTime);
+            
+            times += "q2: \(elapsedTime * 1000) \n"
         }
         
         
-        let finishTime = Date();
         
-        let elapsedTime = finishTime.timeIntervalSince(startTime);
-        resultsTextView.text = String(describing: sqlResults)
+        resultsTextView.text = String(describing: times)
         sqliteQueryTime.text = String(elapsedTime)
         setButtonsState(isEnabled: true)
         
@@ -405,7 +440,11 @@ class ViewController: UIViewController {
         setButtonsState(isEnabled: false)
         print("querying coredata...");
         
-        let startTime = Date()
+        var startTime = Date()
+        var finishTime: Date
+        var elapsedTime: Double = 0
+        var times = ""
+        
         var results = Results()
         
 //        var sensors: [Sensor] = []
@@ -415,30 +454,6 @@ class ViewController: UIViewController {
         }
         
         let moc = ad.persistentContainer.viewContext
-        
-//        let frMax = NSFetchRequest<ReadingCD>(entityName: "ReadingCD")
-//        let frMin = NSFetchRequest<NSDictionary>(entityName: "ReadingCD")
-//
-//        let sdMax = NSSortDescriptor(key: "timestamp", ascending: false)
-//        let sdMin = NSSortDescriptor(key: "timestamp", ascending: true)
-//
-//        frMin.propertiesToFetch    = ["timestamp"]
-//        frMin.resultType = .dictionaryResultType
-//
-//        frMax.sortDescriptors = [sdMax]
-//        frMin.sortDescriptors = [sdMin]
-//
-//        frMax.fetchLimit = 1
-//        frMin.fetchLimit = 1
-//
-//        let result1 = try! moc.fetch(frMin)
-//
-//        let minTimestampReading = (result1).first
-//
-//        print("min: \(minTimestampReading)")
-////        let maxTimestampReading = (try! moc.fetch(frMax)).first
-//
-        
         
         let fr = NSFetchRequest<NSDictionary>(entityName: "ReadingCD")
         
@@ -461,6 +476,12 @@ class ViewController: UIViewController {
         
         let queryResults = (try! moc.fetch(fr)).first!
         
+        finishTime = Date();
+        elapsedTime = finishTime.timeIntervalSince(startTime);
+        
+        times += "q1: \(elapsedTime * 1000) \n"
+        
+        startTime = Date()
 //        print ("queryResults: \(String(describing: queryResults))")
 
      
@@ -468,7 +489,6 @@ class ViewController: UIViewController {
         
         let keypathExp = NSExpression(forKeyPath: "value") // can be any column
         let expression = NSExpression(forFunction: "count:", arguments: [keypathExp])
-//        let expression = NSExpression(format: "sensor.@count")
         
         let countDesc = NSExpressionDescription()
         countDesc.expression = expression
@@ -490,8 +510,10 @@ class ViewController: UIViewController {
         
         let sensorsResults = (try! moc.fetch(frSensor))
         
-        let finishTime = Date();
-        let elapsedTime = finishTime.timeIntervalSince(startTime);
+        finishTime = Date();
+        elapsedTime = finishTime.timeIntervalSince(startTime);
+        
+        times += "q2: \(elapsedTime * 1000) \n"
         
         results.largestTimestamp = queryResults.value(forKey: "maxTimestamp") as? Date
         results.smallestTimestamp = queryResults.value(forKey: "minTimestamp") as? Date
@@ -499,14 +521,14 @@ class ViewController: UIViewController {
         
         results.sensorsResults = [:]
         
-        for s in sensorsResults {
-            let sensorID = s.value(forKey: "sensor") as! NSManagedObjectID
-            let sensor = (try! moc.object(with: sensorID)) as! SensorCD
-            let count = s.value(forKey: "count") as! Int
-            let avg = s.value(forKey: "avg") as! NSNumber
-            
-            results.sensorsResults![sensor.name!] = SensorResults(readings: count, avg: avg.floatValue)
-        }
+//        for s in sensorsResults {
+//            let sensorID = s.value(forKey: "sensor") as! NSManagedObjectID
+//            let sensor = (moc.object(with: sensorID)) as! SensorCD
+//            let count = s.value(forKey: "count") as! Int
+//            let avg = s.value(forKey: "avg") as! NSNumber
+//            
+//            results.sensorsResults![sensor.name!] = SensorResults(readings: count, avg: avg.floatValue)
+//        }
         
       
         
@@ -516,7 +538,7 @@ class ViewController: UIViewController {
         coreDataGeneratingTime.text = String(elapsedTime)
         print("Core Data querying finished")
         
-        resultsTextView.text = String(describing: results)
+        resultsTextView.text = String(describing: times)
     }
 }
 

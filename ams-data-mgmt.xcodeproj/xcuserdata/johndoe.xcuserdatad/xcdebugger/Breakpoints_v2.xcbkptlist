@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ams-data-mgmt/ViewController.swift"
-            timestampString = "600451258.0442981"
+            timestampString = "600455429.84946"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "244"
-            endingLineNumber = "244"
+            startingLineNumber = "265"
+            endingLineNumber = "265"
             landmarkName = "openDb()"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ams-data-mgmt/ViewController.swift"
-            timestampString = "600451258.0452909"
+            timestampString = "600455429.850256"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "462"
-            endingLineNumber = "462"
+            startingLineNumber = "477"
+            endingLineNumber = "477"
             landmarkName = "startCoreDataQueries(_:)"
             landmarkType = "7">
          </BreakpointContent>
