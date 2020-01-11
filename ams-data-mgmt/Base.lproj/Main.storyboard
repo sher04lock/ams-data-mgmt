@@ -145,6 +145,9 @@
                                 <state key="disabled">
                                     <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="generateCoreData:" destination="BYZ-38-t0r" eventType="touchUpInside" id="e2H-wP-TWd"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NkD-az-c0H">
                                 <rect key="frame" x="44" y="322" width="34" height="30"/>
@@ -153,6 +156,9 @@
                                 <state key="disabled">
                                     <color key="titleColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <connections>
+                                    <action selector="startCoreDataQueries:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hSo-An-78X"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="generating time" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nef-AF-4JN">
                                 <rect key="frame" x="238" y="289" width="121" height="21"/>
@@ -203,12 +209,16 @@
                     <connections>
                         <outlet property="archivingGeneratingTime" destination="XbX-x7-wKE" id="R1k-pF-ISZ"/>
                         <outlet property="archivingQueryTime" destination="0h3-Xx-QtD" id="gok-1L-Ags"/>
+                        <outlet property="coreDataGeneratingTime" destination="l6b-FW-wh0" id="6xA-X9-J3U"/>
+                        <outlet property="coreDataQueryTime" destination="YVJ-aC-zLh" id="Tyy-YV-XdI"/>
                         <outlet property="generateArchivingDataBtn" destination="eLQ-lN-BEa" id="Vsy-8z-saM"/>
+                        <outlet property="generateCoreDataBtn" destination="5V2-nb-GH0" id="Hlr-bX-A2d"/>
                         <outlet property="generateSQLLiteDataBtn" destination="phe-ra-rLc" id="i8L-B6-wCO"/>
                         <outlet property="resultsTextView" destination="zGX-90-l8K" id="4ek-r9-7hM"/>
                         <outlet property="sqliteGeneratingTime" destination="fin-nm-IMc" id="QdQ-Ll-htA"/>
                         <outlet property="sqliteQueryTime" destination="BLo-EL-edf" id="3aX-ib-I1T"/>
                         <outlet property="startArchivingQueriesBtn" destination="ia4-Bt-FOc" id="xhY-cW-dNE"/>
+                        <outlet property="startCoreDataQueriesBtn" destination="NkD-az-c0H" id="DJb-Lz-XPv"/>
                         <outlet property="startSQLLiteQueriesBtn" destination="Ptk-sU-3DD" id="7ni-SF-L7q"/>
                         <outlet property="totalSamplesLabel" destination="Whj-2Y-A70" id="Tsx-3I-gAf"/>
                     </connections>

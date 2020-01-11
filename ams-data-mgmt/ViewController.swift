@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Foundation
+import CoreData
 
 let YEAR_IN_SECONDS = 31556926.0
 let NO_OF_READINGS = 50 * 1000
@@ -51,6 +53,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var sqliteGeneratingTime: UITextField!
     @IBOutlet weak var sqliteQueryTime: UITextField!
     
+    @IBOutlet weak var generateCoreDataBtn: UIButton!
+    @IBOutlet weak var startCoreDataQueriesBtn: UIButton!
+    @IBOutlet weak var coreDataGeneratingTime: UITextField!
+    @IBOutlet weak var coreDataQueryTime: UITextField!
+    
+    
     @IBOutlet weak var resultsTextView: UITextView!
     
     @IBOutlet weak var totalSamplesLabel: UILabel!
@@ -67,7 +75,9 @@ class ViewController: UIViewController {
             generateArchivingDataBtn,
             startArchivingQueriesBtn,
             generateSQLLiteDataBtn,
-            startArchivingQueriesBtn
+            startArchivingQueriesBtn,
+            generateCoreDataBtn,
+            startCoreDataQueriesBtn
         ]
         
         buttons.forEach({
@@ -340,5 +350,189 @@ class ViewController: UIViewController {
         setButtonsState(isEnabled: true)
         
     }
+    
+    // CORE DATA
+    
+    @IBAction func generateCoreData(_ sender: Any) {
+        resetAllRecords(in: "ReadingCD")
+        resetAllRecords(in: "SensorCD")
+        
+        setButtonsState(isEnabled: false)
+        
+        print("generating coredata");
+        
+        let startTime = Date();
+        
+        let data = generateData()
+        let sensors = data.0
+        let readings = data.1
+        
+        guard let ad = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let moc = ad.persistentContainer.viewContext
+        
+        var sensorsCD: [SensorCD] = []
+        
+        for s in sensors {
+            let sensor = SensorCD(context: moc)
+            sensor.desc = s.desc
+            sensor.name = s.name
+            sensorsCD.append(sensor)
+        }
+        
+        for r in readings {
+            let reading = ReadingCD(context: moc)
+            
+            reading.sensor = sensorsCD.randomElement()
+            
+            reading.timestamp = r.timestamp
+            reading.value = r.value
+        }
+        
+        try? moc.save()
+        
+        let finishTime = Date();
+        
+        let elapsedTime = finishTime.timeIntervalSince(startTime);
+         setButtonsState(isEnabled: true)
+        coreDataGeneratingTime.text = String(elapsedTime)
+        print("Core Data Saved")
+    }
+    
+    @IBAction func startCoreDataQueries(_ sender: Any) {
+        setButtonsState(isEnabled: false)
+        print("querying coredata...");
+        
+        let startTime = Date()
+        var results = Results()
+        
+//        var sensors: [Sensor] = []
+        
+        guard let ad = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let moc = ad.persistentContainer.viewContext
+        
+//        let frMax = NSFetchRequest<ReadingCD>(entityName: "ReadingCD")
+//        let frMin = NSFetchRequest<NSDictionary>(entityName: "ReadingCD")
+//
+//        let sdMax = NSSortDescriptor(key: "timestamp", ascending: false)
+//        let sdMin = NSSortDescriptor(key: "timestamp", ascending: true)
+//
+//        frMin.propertiesToFetch    = ["timestamp"]
+//        frMin.resultType = .dictionaryResultType
+//
+//        frMax.sortDescriptors = [sdMax]
+//        frMin.sortDescriptors = [sdMin]
+//
+//        frMax.fetchLimit = 1
+//        frMin.fetchLimit = 1
+//
+//        let result1 = try! moc.fetch(frMin)
+//
+//        let minTimestampReading = (result1).first
+//
+//        print("min: \(minTimestampReading)")
+////        let maxTimestampReading = (try! moc.fetch(frMax)).first
+//
+        
+        
+        let fr = NSFetchRequest<NSDictionary>(entityName: "ReadingCD")
+        
+        let edAvg = NSExpressionDescription()
+        edAvg.name = "avg"
+        edAvg.expression = NSExpression(format: "@avg.value")
+        
+        let edMax = NSExpressionDescription()
+        edMax.name = "maxTimestamp"
+        edMax.expression = NSExpression(format: "@max.timestamp")
+        edMax.expressionResultType = .dateAttributeType
+        
+        let edMin = NSExpressionDescription()
+        edMin.name = "minTimestamp"
+        edMin.expression = NSExpression(format: "@min.timestamp")
+        edMin.expressionResultType = .dateAttributeType
+        
+        fr.propertiesToFetch = [edAvg, edMax, edMin]
+        fr.resultType = .dictionaryResultType
+        
+        let queryResults = (try! moc.fetch(fr)).first!
+        
+//        print ("queryResults: \(String(describing: queryResults))")
+
+     
+        let frSensor = NSFetchRequest<NSDictionary>(entityName: "ReadingCD")
+        
+        let keypathExp = NSExpression(forKeyPath: "value") // can be any column
+        let expression = NSExpression(forFunction: "count:", arguments: [keypathExp])
+//        let expression = NSExpression(format: "sensor.@count")
+        
+        let countDesc = NSExpressionDescription()
+        countDesc.expression = expression
+        countDesc.name = "count"
+        countDesc.expressionResultType = .integer16AttributeType
+        
+        
+        let eSensorAvg = NSExpression(format: "@avg.value")
+        
+        let edSensorAvg = NSExpressionDescription()
+        edSensorAvg.expression = eSensorAvg
+        edSensorAvg.name = "avg"
+        edSensorAvg.expressionResultType = .floatAttributeType
+        
+        frSensor.returnsObjectsAsFaults = false
+        frSensor.propertiesToGroupBy = ["sensor"]
+        frSensor.propertiesToFetch = ["sensor", countDesc, edSensorAvg]
+        frSensor.resultType = .dictionaryResultType
+        
+        let sensorsResults = (try! moc.fetch(frSensor))
+        
+        let finishTime = Date();
+        let elapsedTime = finishTime.timeIntervalSince(startTime);
+        
+        results.largestTimestamp = queryResults.value(forKey: "maxTimestamp") as? Date
+        results.smallestTimestamp = queryResults.value(forKey: "minTimestamp") as? Date
+        results.avgValue = Float(queryResults.value(forKey: "avg") as! String)
+        
+        results.sensorsResults = [:]
+        
+        for s in sensorsResults {
+            let sensorID = s.value(forKey: "sensor") as! NSManagedObjectID
+            let sensor = (try! moc.object(with: sensorID)) as! SensorCD
+            let count = s.value(forKey: "count") as! Int
+            let avg = s.value(forKey: "avg") as! NSNumber
+            
+            results.sensorsResults![sensor.name!] = SensorResults(readings: count, avg: avg.floatValue)
+        }
+        
+      
+        
+        coreDataQueryTime.text = String(elapsedTime);
+        
+        setButtonsState(isEnabled: true)
+        coreDataGeneratingTime.text = String(elapsedTime)
+        print("Core Data querying finished")
+        
+        resultsTextView.text = String(describing: results)
+    }
 }
 
+func resetAllRecords(in entity : String) // entity = Your_Entity_Name
+{
+    
+    let context = ( UIApplication.shared.delegate as! AppDelegate ).persistentContainer.viewContext
+    let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+    let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+    do
+    {
+        try context.execute(deleteRequest)
+        try context.save()
+    }
+    catch
+    {
+        print ("There was an error")
+    }
+}
